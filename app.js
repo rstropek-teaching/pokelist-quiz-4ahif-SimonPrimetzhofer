@@ -9,11 +9,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 //Getting the Table by ID
 let pList = document.getElementById("pList");
+//Modal
+let modal = document.getElementById('myModal');
+//Details about pokemon
 let pName = document.getElementById("pName");
-let pWeight = document.getElementById("weight");
-let pic = document.getElementById("pic");
-let abilities = document.getElementById("abilities");
-let btn = document.getElementById("btn");
+let pWeight = document.getElementById("pWeight");
+let pImage = document.getElementById("pImage");
+let pAbilities = document.getElementById("pAbilities");
 //Starting offset is 0
 let offset = 0;
 //This function is able to fetch data from the PokeAPI and to display it on the HTML page
@@ -22,6 +24,7 @@ function page() {
         //Calling the API
         const response = yield fetch("https://pokeapi.co/api/v2/pokemon/?limit=20&offset=" + offset);
         const result = yield response.json();
+        //Showing the list of pokemons
         let showTable = "";
         for (const pokemon of result.results) {
             let row = `<tr><td>${pokemon.name}</td>`;
@@ -35,12 +38,43 @@ function page() {
 }
 function details(url) {
     return __awaiter(this, void 0, void 0, function* () {
+        //Check if the modal is not null
+        if (modal != null)
+            modal.style.display = "block";
+        else
+            return;
+        // Click somewhere outside the modal to close it
+        window.onclick = function (event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        };
         //Getting the details about a pokemon
         const response = yield fetch(url);
         const pokemon = yield response.json();
-        window.open("detail.html", "_self");
+        //Setting the name
         if (pName != null)
             pName.innerHTML = pokemon.name;
+        //Setting the weight    
+        if (pWeight != null)
+            pWeight.innerHTML = "Weight: " + pokemon.weight;
+        //Setting the image
+        if (pImage != null) {
+            pImage.innerHTML = "";
+            let image = document.createElement("img");
+            image.setAttribute("id", "image");
+            image.setAttribute("src", pokemon.sprites.front_default);
+            pImage.appendChild(image);
+        }
+        //Setting the abilities
+        if (pAbilities != null) {
+            pAbilities.innerHTML = "";
+            let abilities = "<strong>Abilities:</strong><br/>";
+            for (const ability of pokemon.abilities) {
+                abilities += ability.ability.name + "<br/>";
+            }
+            pAbilities.innerHTML = abilities;
+        }
     });
 }
 //This function gets called when the user presses the ">" button
